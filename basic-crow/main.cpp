@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     return crow::response{responseText};
   });
 
-  if(argc > 3)
+  if(argc > 2)
   {
       app.port(2001).concurrency(std::stoi(argv[2])).run();
   }

@@ -1,6 +1,6 @@
 # REST-CPP-benchmark
 
-C = 28 (hardware_concurrency), P = 10, VPN
+C = 28 (hardware_concurrency), P = 10, N = 200, VPN
 
 | Framework | 0 ms |  200 ms |
 |----------|:-------------:|------:|
@@ -10,3 +10,14 @@ C = 28 (hardware_concurrency), P = 10, VPN
 | Pistache | 22.971 | 1:01.558 |
 | Restbed | 22.703  | 1:02.839 |
 | Restinio | 24.401 | 1:01.485 |
+
+C = 28 (hardware_concurrency), P = 10, N = 2000, Local
+
+| Framework | 0 ms |  |
+|----------|:-------------:|------:|
+| CPP-REST-SDK | 6.852 |  |
+| Crow     | 3.032 |  |
+| HttpLib  | | |
+| Pistache | | |
+| Restbed | | |
+| Restinio | | |

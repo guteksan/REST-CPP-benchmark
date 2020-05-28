@@ -24,20 +24,18 @@ if __name__ == "__main__":
 
     argp.add_argument('-s', '--server',
                       help='Address of the composer service', required=True)
-    argp.add_argument('-p', '--port',
+    argp.add_argument('-pt', '--port',
                       help='Port of the composer service', default=80)
     argp.add_argument('-e', '--endpoint',
                       help='Endpoint to send data', default='')
-    group.add_argument('-f', '--filename',
-                      help='File of format <filename>_N.txt with input requests in JSON format')
-    group.add_argument('-r', '--requests',
-                      help ='Number of requests to run if no are specified in the file')
-    argp.add_argument('-n', '--number',
-                      help='Number of processes to run in parallel', default=1)
+    group.add_argument('-N', '--requests',
+                      help ='Number of requests')
+    argp.add_argument('-P', '--producers',
+                      help='Number of producer processes to run in parallel', default=1)
     args = argp.parse_args()
 
     lock = Lock()
 
     #worker(lock,1,args)
-    for n in range(int(args.number)):
+    for n in range(int(args.producers)):
         Process(target=worker, args=(lock,n,args)).start()

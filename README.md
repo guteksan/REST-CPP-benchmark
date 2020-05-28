@@ -31,7 +31,7 @@ The ```/test``` endpoint was used for testing performance. There were 5 testing 
 
 A testcase is any combination of above parameters. There could be in total 16 testcases, but testcases for N=200 and t=0ms. were intentionally excluded as not providing any new information.
 
-Services were deployed on Ubuntu 16.04. To simulate clients, a python script ```postInLoop.py``` was used.
+Services were deployed and tested on Ubuntu 16.04
 
 ## Test results
 
@@ -51,3 +51,50 @@ Red ```x``` means that the service run into deadlock and test could not be finis
 4. Situation changes in the VPN environment, which introduces some time overhead. For most services, at full power, this overhead is linear and about 105 sec. per 1000 requests, as can be seen comparing tests 1 with 3, 5 with 7 and 9 with 11, with exception of **Httplib**, whose VPN overhead is twice as high (210 sec. per 1000 requests). 
 5. For *no delay* cases (top-right table), limiting the number of threads does not degrade the performance of most frameworks, actually it can even slightly improve it, as marked in point 2. Only **Httplib** stands out, having the biggest degradation of performance between testcases 2 and 4. Changing environment from Local to VPN at C=4 introduced about 367 sec. overhead, visible also between testcases 10 and 12. Limiting the number of requests to 20% (testcases 6 and 8) reduces the VPN overhead of *Httplib* to 73.5 sec., which indicates that for C=4 this overhead is still linear at rate 367 per 1000 requests.
 6. For most of other frameworks the VPN overhead seems to be shadowed by the 200ms request processing time t. Only **Pistache** is still affected by such overhead (at rate 110 sec per 1000 requests), but only for C=4.
+
+## Other aspects 
+
+Below table summarizes other features of analyses frameworks that can be interesting for a professional development.
+![Image](images/rest_all_other.PNG)
+
+Only **Restbed**'s AGPL license may be problematic for some companies, which would like to use this framework for its products and tools. 
+
+*"Ease of including"* is a subjective measure describing how easy for me was to get the framework, build it, manage its dependecies and integrate it with existing package management systems, that companies may use. The highest scores got **Crow** and **Httplib** for header only libraries ensuring the easiest integration. **Restinio** got the lowest score, since I was not able to overcome a problem with its dependencies using just apt tool on Ubuntu Xenial (https://github.com/Stiffstream/restinio/issues/86).
+
+*"Ease of using"* is another subjective measure describing how easy for me was to build the basic service. Again **Crow** and **Httplib** got highest scores, together with **Pistache**. These libraries provide us with many useful primitives to build a service, helpful examples and the amount of boilerplate code is reduced to minimum. The lowest score goes to **Cpp-REST-SDK**, which seems to be overcomplicated and the simplest tasks require diving deep into the documentation and writing lots of own code. **Restinio** was in the middle. It may be a little overcomplicated too, but provides many useful examples and after a while you can get the idea.
+
+## The benchmark projects
+
+This repository contains 6 basic services used for this test. Anyone is enouraged to use them for verification of above results or running own tests. Each service is a Cmake project, which can be built separately. 
+
+### Dependencies
+Before building the benchmark projects, its dependencies need to be installed. You may install them in the system or locally - in that case use ```-DCMAKE_PREFIX_PATH=<>``` can be used to indicate the location of libraries in the next step. All projects use https://github.com/log4cplus/log4cplus to provide consistent logging with millisecond precision. Also:
+* **basic-cpprestsdk** requires installed CPP-REST-SDK, Boost and OpenSSL
+* **basic-crow** requires Boost only, as the project already contains ```crow_all.h``` header file.
+* **basic-httplib** requires nothing, as the project already contains the header file.
+* **basic-pistache** requires built and installed static version of Pistache.
+* **basic-restbed** requires installed Restbed.
+* **basic-restinio** requires [Conan](https://conan.io/) and adding its conan repository in the way described here: https://stiffstream.com/en/docs/restinio/0.6/obtaining.html#id2.
+
+### Building projects
+```
+cd basic-xxx
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
+After building, place the ```logger-config.ini``` in the folder containing the binaries.
+
+### Using
+To run a service use:
+```
+$ ./basic-xxx [t (ms.)] [C]
+```
+t is the simulated time of handling a request, C is the number of threads in the threadpool. Parameters are positional and optional. Default value for C is ```hardware_concurrency()``` and for t is 0. **basic-httplib** accepts only single parameter t, as the number of threads is chosen at compilation time (see ```basic-httplib/main.cpp```).
+
+To simulate clients, a python script ```postInLoop.py``` was used. Run:
+```
+$ python3 postInLoop.py -h
+```
+for usage.

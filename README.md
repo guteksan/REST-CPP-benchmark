@@ -31,7 +31,12 @@ The ```/test``` endpoint was used for testing performance. There were 5 testing 
 
 A testcase is any combination of above parameters. There could be in total 16 testcases, but testcases for N=200 and t=0ms. were intentionally excluded as not providing any new information.
 
-Services were deployed and tested on Ubuntu 16.04
+## System information
+Services were deployed on the following system:
+
+* Processor: 28x Intel Xeon CPU E5-2660 v4 @ 2.0 GHz
+* Memory: 64 GB 
+* OS: Ubuntu 16.04.3 LTS
 
 ## Test results
 
